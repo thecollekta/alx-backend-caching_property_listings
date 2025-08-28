@@ -56,7 +56,7 @@ docker-compose exec web python manage.py createsuperuser
 
 ### 6. Access the application
 
-- API: <http://localhost:8000/api/>
+- API: <http://localhost:8000/properties>
 - Admin Interface: <http://localhost:8000/admin/>
 - PostgreSQL: localhost:5432
 - Redis: localhost:6379
@@ -66,8 +66,8 @@ docker-compose exec web python manage.py createsuperuser
 1. Create and activate a virtual environment:
 
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .\.venv\Scripts\activate
    ```
 
 2. Install dependencies:
@@ -110,18 +110,18 @@ alx-backend-caching_property_listings/
 
 | Endpoint | Method | Description | Cache Duration |
 |----------|--------|-------------|----------------|
-| `/api/properties/` | GET | List all properties | 15 minutes |
-| `/api/properties/` | POST | Create a new property | - |
-| `/api/properties/{id}/` | GET | Get property details | - |
-| `/api/properties/{id}/` | PUT | Update a property | - |
-| `/api/properties/{id}/` | DELETE | Delete a property | - |
+| `/properties/` | GET | List all properties | 15 minutes |
+| `/properties/` | POST | Create a new property | - |
+| `/properties/{id}/` | GET | Get property details | - |
+| `/properties/{id}/` | PUT | Update a property | - |
+| `/properties/{id}/` | DELETE | Delete a property | - |
 
 ## Caching Strategy
 
 This project implements server-side caching using Redis to improve performance. The following caching strategies are used:
 
 1. **View-Level Caching**
-   - The property list endpoint (`GET /api/properties/`) is cached for 15 minutes
+   - The property list endpoint (`GET /properties/`) is cached for 15 minutes
    - Uses Django's `@cache_page` decorator for easy implementation
    - Cache is automatically invalidated after the timeout period
 
@@ -143,7 +143,7 @@ This project implements server-side caching using Redis to improve performance. 
 
 To verify that caching is working:
 
-1. Make a GET request to `/api/properties/`
+1. Make a GET request to `http://localhost:8000/properties/`
 2. Check the response headers for `X-From-Cache: 1` on subsequent requests
 3. The response will be served from cache until the 15-minute timeout expires
 
