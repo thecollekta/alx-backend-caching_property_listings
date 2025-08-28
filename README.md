@@ -1,0 +1,172 @@
+# Property Listings API with Django, PostgreSQL, and Redis
+
+A high-performance property listings API built with Django, PostgreSQL, and Redis for caching. This project demonstrates how to implement efficient data caching in a Django application.
+
+## Features
+
+- **Property Management**: Create, read, update, and delete property listings
+- **High Performance**: Redis caching for improved response times
+- **Containerized**: Docker and Docker Compose for easy setup and deployment
+- **Scalable**: Designed to handle high traffic with efficient database queries
+- **RESTful API**: Follows REST principles for easy integration
+
+## Prerequisites
+
+- Docker and Docker Compose
+- Python 3.9+
+- Git
+
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/alx-backend-caching_property_listings.git
+cd alx-backend-caching_property_listings
+```
+
+### 2. Set up environment variables
+
+Create a `.env` file in the project root with the following variables:
+
+```env
+DEBUG=True
+SECRET_KEY=your-secret-key-here
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+IS_DOCKER=false  # Set to true when running in Docker
+```
+
+### 3. Build and run with Docker (Recommended)
+
+```bash
+docker-compose up --build -d
+```
+
+### 4. Run migrations
+
+```bash
+docker-compose exec web python manage.py migrate
+```
+
+### 5. Create a superuser (optional)
+
+```bash
+docker-compose exec web python manage.py createsuperuser
+```
+
+### 6. Access the application
+
+- API: <http://localhost:8000/api/>
+- Admin Interface: <http://localhost:8000/admin/>
+- PostgreSQL: localhost:5432
+- Redis: localhost:6379
+
+## Development Setup (Without Docker)
+
+1. Create and activate a virtual environment:
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Run the development server:
+
+   ```bash
+   python manage.py runserver
+   ```
+
+## Project Structure
+
+```text
+alx-backend-caching_property_listings/
+├── alx_backend_caching_property_listings/  # Django project settings
+├── properties/                             # Property listings app
+│   ├── migrations/                         # Database migrations
+│   ├── __init__.py
+│   ├── admin.py                            # Admin interface configuration
+│   ├── apps.py                             # App configuration
+│   ├── models.py                           # Database models
+│   ├── serializers.py                      # API serializers
+│   ├── urls.py                             # URL routing
+│   └── views.py                            # API views
+├── .env.example                            # Example environment variables
+├── .gitignore                              # Git ignore file
+├── docker-compose.yml                      # Docker Compose configuration
+├── Dockerfile                              # Docker configuration
+├── manage.py                               # Django management script
+└── requirements.txt                        # Python dependencies
+```
+
+## API Endpoints
+
+### Properties
+
+| Endpoint | Method | Description | Cache Duration |
+|----------|--------|-------------|----------------|
+| `/api/properties/` | GET | List all properties | 15 minutes |
+| `/api/properties/` | POST | Create a new property | - |
+| `/api/properties/{id}/` | GET | Get property details | - |
+| `/api/properties/{id}/` | PUT | Update a property | - |
+| `/api/properties/{id}/` | DELETE | Delete a property | - |
+
+## Caching Strategy
+
+This project implements server-side caching using Redis to improve performance. The following caching strategies are used:
+
+1. **View-Level Caching**
+   - The property list endpoint (`GET /api/properties/`) is cached for 15 minutes
+   - Uses Django's `@cache_page` decorator for easy implementation
+   - Cache is automatically invalidated after the timeout period
+
+2. **Cache Invalidation**
+   - The cache is automatically invalidated after the specified timeout (15 minutes)
+   - Manual cache invalidation can be done using Django's cache framework if needed
+
+3. **Cache Storage**
+   - Redis is used as the cache backend
+   - Each cached response is stored with a unique key based on the request URL
+   - Cache keys are automatically managed by Django's caching framework
+
+4. **Performance Benefits**
+   - Reduces database load by serving cached responses
+   - Improves response times for frequently accessed data
+   - Scales better under high traffic conditions
+
+### Verifying Cache
+
+To verify that caching is working:
+
+1. Make a GET request to `/api/properties/`
+2. Check the response headers for `X-From-Cache: 1` on subsequent requests
+3. The response will be served from cache until the 15-minute timeout expires
+
+### Cache Headers
+
+The API includes the following cache-related headers:
+
+- `Cache-Control: max-age=900` - Indicates the response can be cached for 15 minutes (900 seconds)
+- `Expires` - Shows the exact time when the cache will expire
+- `X-From-Cache` - Indicates if the response was served from cache (1) or generated fresh (0)
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DEBUG` | Enable debug mode | `True` |
+| `SECRET_KEY` | Django secret key | - |
+| `DJANGO_ALLOWED_HOSTS` | Allowed hostnames | `localhost,127.0.0.1` |
+| `IS_DOCKER` | Whether running in Docker | `false` |
+| `POSTGRES_DB` | PostgreSQL database name | `property_db` |
+| `POSTGRES_USER` | PostgreSQL username | `property_user` |
+| `POSTGRES_PASSWORD` | PostgreSQL password | `property_password` |
+
+## License
+
+This project is for educational purpose as part of the ALX ProDEV SE Backend Programme.
